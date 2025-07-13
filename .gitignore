@@ -1,0 +1,22 @@
+# Root .gitignore
+
+# Environment variables
+.env
+
+# Logs
+*.log
+logs
+
+# Node dependencies
+node_modules
+
+# Build output
+dist
+dist-ssr
+
+# System files
+.DS_Store
+
+# IDE files
+.vscode/
+.idea/
