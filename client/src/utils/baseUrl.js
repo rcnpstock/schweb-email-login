@@ -1,1 +1,1 @@
-export const base_url= "http://52.21.228.113"
+export const base_url= "https://pinescriptdeveloper.com"
