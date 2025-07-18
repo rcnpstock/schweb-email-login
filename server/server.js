@@ -4,8 +4,14 @@ const path = require("path");
 const express = require("express");
 const bodyParser = require("body-parser");
 const connectDB = require("./db/db.js");
+const cors = require("cors")
 
 const app = express();
+
+app.use(cors({
+    origin: ['https://pinescriptdeveloper.com', 'https://www.pinescriptdeveloper.com'],
+    credentials: true
+}));
 
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, "../client/dist")));
