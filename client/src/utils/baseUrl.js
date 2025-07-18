@@ -1,1 +1,1 @@
-export const base_url= "https://pinescriptdeveloper.com/api/"
+export const base_url= "https://pinescriptdeveloper.com/api"
