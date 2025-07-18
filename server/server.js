@@ -12,8 +12,8 @@ app.use(express.static(path.join(__dirname, "../client/dist")));
 
 const oauthRoutes = require("./routes/oauth.route.js");
 const webhookRoutes = require("./routes/webhook.route.js");
-app.use("/oauth", oauthRoutes);
-app.use("/webhook", webhookRoutes);
+app.use("/api/oauth", oauthRoutes);
+app.use("/api/webhook", webhookRoutes);
 
 app.get("/", (req, res) => {
     res.send("Schwab Webhook App is running");

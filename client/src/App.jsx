@@ -72,19 +72,11 @@ function App() {
         setIsSubmitting(true);
         setOrderMessage("");
         try {
-            await axios.post(
-                `${base_url}/webhook/place-order`,
-                {
-                    symbol: symbol.trim(),
-                    quantity: Number(quantity),
-                    instruction: instruction,
-                },
-                {
-                    headers: {
-                        "ngrok-skip-browser-warning": "true",
-                    },
-                }
-            );
+            await axios.post(`${base_url}/webhook/place-order`, {
+                symbol: symbol.trim(),
+                quantity: Number(quantity),
+                instruction: instruction,
+            });
             setOrderMessage("✅ Order placed successfully!");
             setSymbol("");
             setQuantity("");
