@@ -5,7 +5,40 @@ const Token = require("../models/token.model.js");
 const axios = require("axios");
 const HttpsProxyAgent = require("https-proxy-agent");
 
-router.get("/login", async (req, res) => {
+// router.get("/login", async (req, res) => {
+//     const { CLIENT_ID, REDIRECT_URI } = process.env;
+//     const baseUrl = "https://api.schwabapi.com/v1/oauth/authorize";
+
+//     const oauthUrl = `${baseUrl}?response_type=code&client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(
+//         REDIRECT_URI
+//     )}&scope=PlaceTrade%20ReadAccounts`;
+
+//     // https://api.schwabapi.com/v1/oauth/authorize?client_id={APP_KEY}&redirect_uri={CALLBACK_URL}
+
+//     console.log("Proxying request to:", oauthUrl);
+
+//     try {
+//         // Proxy Agent with US-based IP
+//         // const proxy = new HttpsProxyAgent("http://129.213.69.94:80");
+
+//         // Fetch Schwab Auth Page
+//         const response = await axios.get(
+//             oauthUrl
+//             //      {
+//             //     httpsAgent: proxy,
+//             //     headers: { "User-Agent": "Mozilla/5.0" },
+//             // }
+//         );
+
+//         // Send Schwab response to user
+//         res.send(response.data);
+//     } catch (err) {
+//         console.error("login error:", err.message);
+//         res.status(500).send("Error accessing Schwab OAuth");
+//     }
+// });
+
+router.get("/login", (req, res) => {
     const { CLIENT_ID, REDIRECT_URI } = process.env;
     const baseUrl = "https://api.schwabapi.com/v1/oauth/authorize";
 
@@ -13,40 +46,10 @@ router.get("/login", async (req, res) => {
         REDIRECT_URI
     )}&scope=PlaceTrade%20ReadAccounts`;
 
-    // https://api.schwabapi.com/v1/oauth/authorize?client_id={APP_KEY}&redirect_uri={CALLBACK_URL}
+    console.log("Redirecting to:", oauthUrl);
 
-    console.log("Proxying request to:", oauthUrl);
-
-    try {
-        // Proxy Agent with US-based IP
-        const proxy = new HttpsProxyAgent("http://129.213.69.94:80");
-
-        // Fetch Schwab Auth Page
-        const response = await axios.get(oauthUrl, {
-            httpsAgent: proxy,
-            headers: { "User-Agent": "Mozilla/5.0" },
-        });
-
-        // Send Schwab response to user
-        res.send(response.data);
-    } catch (err) {
-        console.error("Proxy login error:", err.message);
-        res.status(500).send("Error accessing Schwab OAuth");
-    }
+    res.redirect(oauthUrl);
 });
-
-// router.get("/login", (req, res) => {
-//     const { CLIENT_ID, REDIRECT_URI } = process.env;
-//     const baseUrl = "https://api.schwab.com/oauth2/authorize";
-
-//     const oauthUrl = `${baseUrl}?response_type=code&client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(
-//         REDIRECT_URI
-//     )}&scope=PlaceTrade%20ReadAccounts`;
-
-//     console.log("Redirecting to:", oauthUrl);
-
-//     res.redirect(oauthUrl);
-// });
 
 router.get("/callback", async (req, res) => {
     const code = req.query.code;
