@@ -8,11 +8,14 @@ const getAccessToken = async () => {
 };
 
 const getPrimaryAccountId = async (accessToken) => {
-    const res = await axios.get("https://api.schwabapi.com/trading/accounts", {
-        headers: {
-            Authorization: `Bearer ${accessToken}`,
-        },
-    });
+    const res = await axios.get(
+        "https://api.schwabapi.com/trader/v1/accounts/accountNumbers",
+        {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        }
+    );
 
     const accounts = res.data.accounts;
     if (!accounts || accounts.length === 0)
@@ -43,12 +46,13 @@ const placeOrder = async ({ symbol, quantity, instruction }) => {
     };
 
     const response = await axios.post(
-        `https://api.schwabapi.com/trading/accounts/${accountId}/orders`,
+        ` https://api.schwabapi.com/trader/v1/accounts/${accountId}/orders`,
         orderBody,
         {
             headers: {
                 Authorization: `Bearer ${accessToken}`,
                 "Content-Type": "application/json",
+                accept: "*/*",
             },
         }
     );
