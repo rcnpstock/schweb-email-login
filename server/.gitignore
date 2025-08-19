@@ -9,6 +9,9 @@ lerna-debug.log*
 
 .env
 
+combined_code.txt
+combineFiles.js
+
 node_modules
 dist
 dist-ssr
