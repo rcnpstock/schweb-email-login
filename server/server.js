@@ -56,8 +56,17 @@ app.get("/health", (req, res) => {
   res.json({ status: "ok", message: "Schwab Webhook App is running" });
 });
 
+// Root route handler
+app.get("/", (req, res) => {
+  if (IS_PRODUCTION) {
+    res.sendFile(path.join(__dirname, "public/index.html"));
+  } else {
+    res.send("Schwab Webhook App is running - Development Mode");
+  }
+});
+
 // Catch-all handler for SPA routing (MUST BE LAST)
-app.get("/*", (req, res) => {
+app.get("*", (req, res) => {
   if (IS_PRODUCTION) {
     res.sendFile(path.join(__dirname, "public/index.html"));
   } else {
