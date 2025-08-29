@@ -32,7 +32,25 @@ app.use(
     ],
     credentials: true,
   })
-);
+);services:
+  - type: web
+    name: schwab-trading-webhook
+    runtime: node
+    buildCommand: npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: CLIENT_ID
+        sync: false
+      - key: CLIENT_SECRET
+        sync: false
+      - key: REDIRECT_URI
+        sync: false
+      - key: MONGODB_URI
+        sync: false
 
 app.use(bodyParser.json());
 
