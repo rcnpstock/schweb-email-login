@@ -109,13 +109,107 @@ app.get("/health", (req, res) => {
 });
 console.log("✅ Health check route added");
 
-// Root route handler
+// Root route handler - DEMO VERSION
 app.get("/", (req, res) => {
-  if (IS_PRODUCTION) {
-    res.sendFile("index.html", { root: "public" });
-  } else {
-    res.json({ status: "ok", message: "Schwab Webhook App is running - Development" });
-  }
+  const demoHTML = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚀 Schwab TradingView Integration - LIVE!</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            padding: 40px; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .container { 
+            max-width: 800px; 
+            margin: 0 auto; 
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 15px;
+        }
+        .status { 
+            padding: 15px; 
+            background: rgba(76, 175, 80, 0.2); 
+            border: 2px solid #4CAF50;
+            border-radius: 8px; 
+            margin: 20px 0; 
+            font-size: 18px;
+        }
+        .endpoint { 
+            background: rgba(33, 150, 243, 0.2); 
+            padding: 10px; 
+            border-radius: 5px; 
+            margin: 10px 0;
+            border: 1px solid #2196F3;
+        }
+        .btn {
+            background: #4CAF50;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px 5px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn:hover { background: #45a049; }
+        .webhook-url { 
+            background: #1e1e1e; 
+            color: #00ff00; 
+            padding: 15px; 
+            border-radius: 5px; 
+            font-family: monospace; 
+            word-break: break-all;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Schwab TradingView Integration</h1>
+        <div class="status">✅ Server is running successfully! Time: ${new Date().toLocaleString()}</div>
+        
+        <h2>🔗 Quick Actions:</h2>
+        <a href="/login" class="btn">🔐 Login to Schwab</a>
+        <a href="/status" class="btn">📊 Check Login Status</a>
+        <a href="/health" class="btn">💊 Health Check</a>
+        
+        <h2>📡 TradingView Webhook URL:</h2>
+        <div class="webhook-url">
+            https://claude-schweb.onrender.com/webhook/tradingview
+        </div>
+        
+        <h2>🔧 API Endpoints:</h2>
+        <div class="endpoint"><strong>POST</strong> /webhook/tradingview - Receive TradingView signals</div>
+        <div class="endpoint"><strong>GET</strong> /login - Start Schwab OAuth</div>
+        <div class="endpoint"><strong>GET</strong> /status - Check login status</div>
+        <div class="endpoint"><strong>GET</strong> /health - Server health check</div>
+        
+        <h2>📝 Test JSON for TradingView:</h2>
+        <div class="webhook-url">
+{
+  "ticker": "AAPL",
+  "action": "buy",
+  "quantity": 10,
+  "strategy": "my_strategy"
+}
+        </div>
+        
+        <p><strong>Status:</strong> Ready to receive TradingView signals and place Schwab orders! 📈</p>
+    </div>
+</body>
+</html>`;
+  
+  res.send(demoHTML);
 });
 console.log("✅ Root route added");
 
