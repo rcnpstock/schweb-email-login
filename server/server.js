@@ -50,6 +50,16 @@ console.log("Loading cloud setup routes...");
 app.use("/cloud", cloudSetupRoutes);
 console.log("✅ All routes loaded successfully");
 
+// Add static file serving (safe method)
+console.log("Adding static file serving...");
+if (IS_PRODUCTION) {
+  app.use(express.static("public"));
+  console.log("✅ Production static files configured");
+} else {
+  app.use(express.static("../client/dist"));
+  console.log("✅ Development static files configured");
+}
+
 // Health check route (simple route first)
 app.get("/health", (req, res) => {
   res.json({ status: "ok", message: "Schwab Webhook App is running" });
