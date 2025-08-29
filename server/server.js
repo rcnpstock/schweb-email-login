@@ -52,7 +52,50 @@ console.log("✅ All routes loaded successfully");
 
 // Add static file serving (safe method)
 console.log("Adding static file serving...");
+
+// 🪄 MAGIC: Ensure client files exist in production
 if (IS_PRODUCTION) {
+  const publicPath = path.join(__dirname, "public");
+  const indexPath = path.join(publicPath, "index.html");
+  
+  // Create public directory if it doesn't exist
+  if (!fs.existsSync(publicPath)) {
+    fs.mkdirSync(publicPath, { recursive: true });
+    console.log("📁 Created public directory");
+  }
+  
+  // Create fallback index.html if missing
+  if (!fs.existsSync(indexPath)) {
+    const fallbackHTML = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Schwab TradingView Integration</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .status { padding: 10px; background: #e8f5e8; border-radius: 5px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Schwab TradingView Integration</h1>
+        <div class="status">✅ Server is running successfully!</div>
+        <h2>API Endpoints:</h2>
+        <ul>
+            <li><strong>Webhook:</strong> <code>POST /webhook/tradingview</code></li>
+            <li><strong>Health Check:</strong> <code>GET /health</code></li>
+            <li><strong>OAuth Setup:</strong> <code>GET /auth</code></li>
+        </ul>
+        <p>Your TradingView webhook URL: <strong>https://claude-schweb.onrender.com/webhook/tradingview</strong></p>
+    </div>
+</body>
+</html>`;
+    fs.writeFileSync(indexPath, fallbackHTML);
+    console.log("🪄 Created fallback index.html");
+  }
+  
   app.use(express.static("public"));
   console.log("✅ Production static files configured");
 } else {

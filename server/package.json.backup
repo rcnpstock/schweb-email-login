@@ -4,8 +4,14 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
+    "start-debug": "node server-debug.js",
+    "start-minimal": "node server-minimal.js",
     "dev": "nodemon server.js"
   },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
   "dependencies": {
     "axios": "^1.10.0",
     "body-parser": "^2.2.0",
@@ -13,6 +19,7 @@
     "dotenv": "^17.0.0",
     "express": "^5.1.0",
     "https-proxy-agent": "^7.0.6",
+
     "mongoose": "^8.16.1",
     "ngrok": "^4.3.3",
     "nss": "^0.0.1",
