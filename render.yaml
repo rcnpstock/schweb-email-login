@@ -2,7 +2,7 @@ services:
   - type: web
     name: schwab-trading-webhook
     env: node
-    buildCommand: cd client && npm install && npm run build && cd ../server && npm install && mkdir -p public && cp -r ../client/dist/* public/ || echo "Client build failed, continuing without client files"
+    buildCommand: cd client && npm install && npm run build && cd ../server && npm install && mkdir -p public && if [ -d "../client/dist" ]; then cp -r ../client/dist/* public/; echo "Client files copied successfully"; else echo "Client dist directory not found"; fi
     startCommand: cd server && npm start
     envVars:
       - key: NODE_ENV
