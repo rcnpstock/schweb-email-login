@@ -41,8 +41,8 @@ app.use("/webhook", webhookRoutes);
 app.use("/setup", setupRoutes);
 app.use("/cloud", cloudSetupRoutes);
 
-// OAuth routes (includes /, /login, /callback, /status)
-app.use("/", oauthRoutes);
+// OAuth routes (includes /login, /callback, /success, /status)
+app.use(oauthRoutes);
 
 // Serve static files
 if (IS_PRODUCTION) {
