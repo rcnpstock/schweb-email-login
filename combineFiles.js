@@ -35,3 +35,15 @@ async function walkDir(dir) {
 }
 
 combineFiles('.', 'combined_code.txt');
+
+
+
+
+
+
+
+
+
+
+
+

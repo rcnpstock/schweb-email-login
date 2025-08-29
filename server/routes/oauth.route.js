@@ -3,6 +3,7 @@ const express = require("express");
 const router = express.Router();
 const Token = require("../models/token.model.js");
 const axios = require("axios");
+const logger = require("../utils/logger.js");
 
 router.get("/login", (req, res) => {
     const { CLIENT_ID, REDIRECT_URI } = process.env;
@@ -12,28 +13,33 @@ router.get("/login", (req, res) => {
         REDIRECT_URI
     )}&scope=PlaceTrade+ReadAccounts`;
 
-    console.log("Redirecting to:", oauthUrl);
-
+    logger.info("Redirecting to:", oauthUrl);
     res.redirect(oauthUrl);
 });
 
 router.get("/callback", async (req, res) => {
     const code = req.query.code;
-    console.log("OAuth callback code:", code);
+    logger.info("OAuth callback code received:", code);
 
-    if (!code) return res.status(400).send("No code received");
+    if (!code) {
+        logger.error("No code received in callback");
+        return res.status(400).json({ error: "No code received" });
+    }
 
     try {
+        const { CLIENT_ID, CLIENT_SECRET, REDIRECT_URI } = process.env;
         const credentials = Buffer.from(
             `${CLIENT_ID}:${CLIENT_SECRET}`
         ).toString("base64");
+
+        logger.info("Starting token exchange with REDIRECT_URI:", REDIRECT_URI);
 
         const response = await axios.post(
             "https://api.schwabapi.com/v1/oauth/token",
             new URLSearchParams({
                 grant_type: "authorization_code",
                 code,
-                redirect_uri: process.env.REDIRECT_URI,
+                redirect_uri: REDIRECT_URI,
             }),
             {
                 headers: {
@@ -43,36 +49,44 @@ router.get("/callback", async (req, res) => {
             }
         );
 
-        console.log("response from /callback", response);
+        logger.info("Token exchange response:", response.data);
 
         const { access_token, refresh_token, expires_in } = response.data;
 
-        // Optional: remove old tokens if needed
         await Token.deleteMany();
-
-        // Save to MongoDB
         await Token.create({ access_token, refresh_token, expires_in });
 
-        res.redirect("https://pinescriptdeveloper.com/oauth/success");
-        // res.redirect("http://localhost:5173/oauth/success");
+        logger.info("Tokens saved to MongoDB");
+
+        res.redirect("http://localhost:5173");
+        // res.redirect("/success");
+        // res.redirect("/oauth/success");
     } catch (error) {
-        console.error(
-            "Token exchange error:",
-            error.response?.data || error.message
-        );
-        res.status(500).send("Failed to get token.");
+        const errorMessage = error.response?.data || error.message;
+        logger.error("Token exchange error:", errorMessage);
+        res.status(500).json({
+            error: "Failed to get token",
+            details: errorMessage,
+        });
     }
+});
+
+router.get("/success", (req, res) => {
+    res.send("OAuth successful! You can now use the app.");
 });
 
 router.get("/status", async (req, res) => {
     try {
         const tokenDoc = await Token.findOne();
         if (tokenDoc) {
+            logger.info("Logged in status: true");
             res.json({ loggedIn: true });
         } else {
+            logger.info("Logged in status: false");
             res.json({ loggedIn: false });
         }
     } catch (err) {
+        logger.error("Status check error:", err.message);
         res.json({ loggedIn: false });
     }
 });

@@ -17,8 +17,9 @@
     "dotenv": "^17.0.0",
     "express": "^5.1.0",
     "https-proxy-agent": "^7.0.6",
-    "mkcert": "^3.2.0",
+
     "mongoose": "^8.16.1",
+    "ngrok": "^4.3.3",
     "nss": "^0.0.1",
     "winston": "^3.17.0"
   }
