@@ -36,11 +36,13 @@ app.use(
 
 app.use(bodyParser.json());
 
-app.use("/", oauthRoutes);
-// app.use("/api/oauth", oauthRoutes);
+// API routes first (more specific routes)
 app.use("/webhook", webhookRoutes);
 app.use("/setup", setupRoutes);
 app.use("/cloud", cloudSetupRoutes);
+
+// OAuth routes (includes /, /login, /callback, /status)
+app.use("/", oauthRoutes);
 
 // Serve static files
 if (IS_PRODUCTION) {
@@ -49,12 +51,13 @@ if (IS_PRODUCTION) {
   app.use(express.static(path.join(__dirname, "../client/dist")));
 }
 
-app.get("/", (req, res) => {
-  res.send("Schwab Webhook App is running");
+// Health check route
+app.get("/health", (req, res) => {
+  res.json({ status: "ok", message: "Schwab Webhook App is running" });
 });
 
-// Catch-all handler for SPA routing
-app.get("*", (req, res) => {
+// Catch-all handler for SPA routing (MUST BE LAST)
+app.get("/*", (req, res) => {
   if (IS_PRODUCTION) {
     res.sendFile(path.join(__dirname, "public/index.html"));
   } else {

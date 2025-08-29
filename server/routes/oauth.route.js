@@ -58,9 +58,12 @@ router.get("/callback", async (req, res) => {
 
         logger.info("Tokens saved to MongoDB");
 
-        res.redirect("http://localhost:5173");
-        // res.redirect("/success");
-        // res.redirect("/oauth/success");
+        // Redirect back to the app
+        const redirectUrl = process.env.NODE_ENV === 'production' 
+            ? '/success'  // Production: redirect to success page on same domain
+            : 'http://localhost:5173';  // Development: redirect to local client
+        
+        res.redirect(redirectUrl);
     } catch (error) {
         const errorMessage = error.response?.data || error.message;
         logger.error("Token exchange error:", errorMessage);
