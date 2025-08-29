@@ -76,16 +76,8 @@ app.get("/", (req, res) => {
 });
 console.log("✅ Root route added");
 
-// Add SPA routing support (safer catch-all pattern)
-console.log("Adding SPA catch-all route...");
-app.get("/app/*", (req, res) => {
-  if (IS_PRODUCTION) {
-    res.sendFile("index.html", { root: "public" });
-  } else {
-    res.sendFile("index.html", { root: "../client/dist" });
-  }
-});
-console.log("✅ SPA routing configured");
+// Skip catch-all route - use static file serving only for now
+console.log("✅ SPA routing skipped (using static file serving)");
 
 console.log("✅ All routes and middleware configured successfully");
 
