@@ -1,0 +1,12 @@
+{
+  "name": "schwab-trading-webhook",
+  "version": "1.0.0",
+  "description": "Schwab TradingView integration webhook server",
+  "scripts": {
+    "build": "cd client && npm install && npm run build && cd ../server && npm install && mkdir -p public && if [ -d '../client/dist' ]; then cp -r ../client/dist/* public/; echo 'Client files copied successfully'; else echo 'Client dist directory not found'; fi",
+    "start": "cd server && npm start"
+  },
+  "keywords": ["schwab", "tradingview", "webhook", "trading"],
+  "author": "",
+  "license": "ISC"
+}
