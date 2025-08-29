@@ -48,36 +48,21 @@ app.use("/setup", setupRoutes);
 
 console.log("Loading cloud setup routes...");
 app.use("/cloud", cloudSetupRoutes);
+console.log("✅ All routes loaded successfully");
 
-// Serve static files
-if (IS_PRODUCTION) {
-  app.use(express.static(path.join(__dirname, "public")));
-} else {
-  app.use(express.static(path.join(__dirname, "../client/dist")));
-}
-
-// Health check route
+// Health check route (simple route first)
 app.get("/health", (req, res) => {
   res.json({ status: "ok", message: "Schwab Webhook App is running" });
 });
+console.log("✅ Health check route added");
 
 // Root route handler
 app.get("/", (req, res) => {
-  if (IS_PRODUCTION) {
-    res.sendFile(path.join(__dirname, "public/index.html"));
-  } else {
-    res.send("Schwab Webhook App is running - Development Mode");
-  }
+  res.json({ status: "ok", message: "Schwab Webhook App is running" });
 });
+console.log("✅ Root route added");
 
-// Catch-all handler for SPA routing (MUST BE LAST)
-app.get("*", (req, res) => {
-  if (IS_PRODUCTION) {
-    res.sendFile(path.join(__dirname, "public/index.html"));
-  } else {
-    res.sendFile(path.join(__dirname, "../client/dist/index.html"));
-  }
-});
+console.log("✅ All routes and middleware configured successfully");
 
 // Temporarily start server without database to test route loading
 console.log("Starting server without database connection for testing...");
