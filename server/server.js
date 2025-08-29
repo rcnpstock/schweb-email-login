@@ -81,34 +81,43 @@ console.log("✅ SPA routing skipped (using static file serving)");
 
 console.log("✅ All routes and middleware configured successfully");
 
-// Temporarily start server without database to test route loading
-console.log("Starting server without database connection for testing...");
+// Phase 3: Re-enable database connection and services
+console.log("Starting server with full database connection...");
 
-if (IS_PRODUCTION) {
-  // Production: Use HTTP (Render provides HTTPS proxy)
-  app.listen(PORT, "0.0.0.0", () => {
-    console.log(`Server running on http://0.0.0.0:${PORT} (Production)`);
-    console.log("Server started successfully without database");
+connectDB()
+  .then(() => {
+    console.log("✅ Database connected successfully");
+    startTokenRefresh();
+    console.log("✅ Token refresh service started");
+    
+    if (IS_PRODUCTION) {
+      // Production: Use HTTP (Render provides HTTPS proxy)
+      app.listen(PORT, "0.0.0.0", () => {
+        console.log(`🎉 Server running on http://0.0.0.0:${PORT} (Production)`);
+        console.log("🚀 Full Schwab TradingView integration ready!");
+      });
+    } else {
+      // Development: Use HTTPS
+      const options = {
+        key: fs.readFileSync("./localhost-key.pem"),
+        cert: fs.readFileSync("./localhost.pem"),
+      };
+      https.createServer(options, app).listen(PORT, "0.0.0.0", () => {
+        console.log(`🎉 Server running on https://0.0.0.0:${PORT} (Development)`);
+      });
+    }
+  })
+  .catch((err) => {
+    console.error("❌ MongoDB connection failed:", err.message);
+    console.log("⚠️ Starting server without database...");
+    
+    // Fallback: start without database
+    if (IS_PRODUCTION) {
+      app.listen(PORT, "0.0.0.0", () => {
+        console.log(`⚠️ Server running on http://0.0.0.0:${PORT} (Production - No DB)`);
+      });
+    }
   });
-} else {
-  // Development: Use HTTPS
-  const options = {
-    key: fs.readFileSync("./localhost-key.pem"),
-    cert: fs.readFileSync("./localhost.pem"),
-  };
-  https.createServer(options, app).listen(PORT, "0.0.0.0", () => {
-    console.log(`Server running on https://0.0.0.0:${PORT} (Development)`);
-  });
-}
-
-// TODO: Re-enable database connection once route loading is confirmed working
-// connectDB()
-//   .then(() => {
-//     startTokenRefresh();
-//   })
-//   .catch((err) => {
-//     console.error("MongoDB connection failed:", err.message);
-//   });
 
 // // server.js (snippet)
 // const httpsOptions = {
