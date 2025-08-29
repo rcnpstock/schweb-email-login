@@ -68,9 +68,24 @@ console.log("✅ Health check route added");
 
 // Root route handler
 app.get("/", (req, res) => {
-  res.json({ status: "ok", message: "Schwab Webhook App is running" });
+  if (IS_PRODUCTION) {
+    res.sendFile("index.html", { root: "public" });
+  } else {
+    res.json({ status: "ok", message: "Schwab Webhook App is running - Development" });
+  }
 });
 console.log("✅ Root route added");
+
+// Add SPA routing support (safer catch-all pattern)
+console.log("Adding SPA catch-all route...");
+app.get("/app/*", (req, res) => {
+  if (IS_PRODUCTION) {
+    res.sendFile("index.html", { root: "public" });
+  } else {
+    res.sendFile("index.html", { root: "../client/dist" });
+  }
+});
+console.log("✅ SPA routing configured");
 
 console.log("✅ All routes and middleware configured successfully");
 
