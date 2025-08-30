@@ -80,7 +80,7 @@ if (IS_PRODUCTION) {
 }
 
 // SPA catch-all route - serve React app for all other routes (must be last)
-app.get("/*", (req, res) => {
+app.get("*", (req, res) => {
   if (IS_PRODUCTION) {
     const indexPath = path.join(__dirname, "public", "index.html");
     res.sendFile(indexPath);
