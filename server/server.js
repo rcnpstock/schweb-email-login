@@ -21,6 +21,12 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const IS_PRODUCTION = process.env.NODE_ENV === 'production';
 
+// Configure trust proxy for Render deployment
+if (IS_PRODUCTION) {
+  app.set('trust proxy', true);
+  console.log('✅ Trust proxy enabled for production');
+}
+
 app.use(
   cors({
     origin: [
