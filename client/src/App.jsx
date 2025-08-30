@@ -89,7 +89,7 @@ function App() {
                         
                         <button
                             onClick={handleLogin}
-                            className="w-full bg-indigo-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-indigo-700 transition-colors text-lg"
+                            className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-3 px-4 rounded-xl font-medium hover:from-purple-700 hover:to-blue-700 transition-all duration-300 text-lg shadow-lg transform hover:scale-105"
                         >
                             Login with Schwab
                         </button>
@@ -117,7 +117,7 @@ function App() {
                         </div>
                         <button
                             onClick={handleLogout}
-                            className="flex items-center bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors"
+                            className="flex items-center bg-gradient-to-r from-red-500 to-pink-500 text-white px-4 py-2 rounded-xl hover:from-red-600 hover:to-pink-600 transition-all duration-300 shadow-lg transform hover:scale-105"
                         >
                             <LogOut className="w-4 h-4 mr-2" />
                             Logout
@@ -135,7 +135,7 @@ function App() {
                             </div>
                             <button
                                 onClick={() => handleCopy('webhook')}
-                                className="mt-4 w-full flex items-center justify-center bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
+                                className="mt-4 w-full flex items-center justify-center bg-gradient-to-r from-blue-500 to-cyan-500 text-white py-2 px-4 rounded-xl hover:from-blue-600 hover:to-cyan-600 transition-all duration-300 shadow-lg transform hover:scale-105"
                             >
                                 {copied.webhook ? (
                                     <>
@@ -164,7 +164,7 @@ function App() {
                             </div>
                             <button
                                 onClick={() => handleCopy('json')}
-                                className="mt-4 w-full flex items-center justify-center bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors"
+                                className="mt-4 w-full flex items-center justify-center bg-gradient-to-r from-green-500 to-emerald-500 text-white py-2 px-4 rounded-xl hover:from-green-600 hover:to-emerald-600 transition-all duration-300 shadow-lg transform hover:scale-105"
                             >
                                 {copied.json ? (
                                     <>
