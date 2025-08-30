@@ -133,4 +133,15 @@ router.get("/status", async (req, res) => {
     }
 });
 
+router.delete("/tokens", async (req, res) => {
+    try {
+        await Token.deleteMany();
+        logger.info("All tokens deleted successfully");
+        res.json({ success: true, message: "All refresh tokens have been deleted" });
+    } catch (err) {
+        logger.error("Delete tokens error:", err.message);
+        res.status(500).json({ success: false, error: "Failed to delete tokens" });
+    }
+});
+
 module.exports = router;

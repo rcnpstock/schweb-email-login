@@ -65,6 +65,21 @@ function App() {
         }
     };
 
+    const handleDeleteAllTokens = async () => {
+        try {
+            const response = await axios.delete(`${base_url}/tokens`);
+            if (response.data.success) {
+                // After deleting tokens, user is effectively logged out
+                setIsLoggedIn(false);
+                localStorage.removeItem("isLoggedIn");
+                alert("All refresh tokens have been deleted successfully!");
+            }
+        } catch (error) {
+            console.error("Error deleting tokens:", error);
+            alert("Failed to delete tokens. Please try again.");
+        }
+    };
+
     // Loading state
     if (!loginChecked) {
         return (
@@ -115,13 +130,21 @@ function App() {
                             </h1>
                             <p className="text-gray-600">Your webhook is ready to use!</p>
                         </div>
-                        <button
-                            onClick={handleLogout}
-                            className="flex items-center bg-gradient-to-r from-red-500 to-pink-500 text-white px-4 py-2 rounded-xl hover:from-red-600 hover:to-pink-600 transition-all duration-300 shadow-lg transform hover:scale-105"
-                        >
-                            <LogOut className="w-4 h-4 mr-2" />
-                            Logout
-                        </button>
+                        <div className="flex gap-3">
+                            <button
+                                onClick={handleDeleteAllTokens}
+                                className="flex items-center bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-2 rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all duration-300 shadow-lg transform hover:scale-105"
+                            >
+                                delete all token
+                            </button>
+                            <button
+                                onClick={handleLogout}
+                                className="flex items-center bg-gradient-to-r from-red-500 to-pink-500 text-white px-4 py-2 rounded-xl hover:from-red-600 hover:to-pink-600 transition-all duration-300 shadow-lg transform hover:scale-105"
+                            >
+                                <LogOut className="w-4 h-4 mr-2" />
+                                Logout
+                            </button>
+                        </div>
                     </div>
 
                     <div className="grid md:grid-cols-2 gap-6">
