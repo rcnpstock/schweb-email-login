@@ -5,7 +5,7 @@ import axios from "axios";
 // Determine base URL based on environment
 const base_url = window.location.hostname === 'localhost' 
     ? 'https://local.schwabtest.com:3000'
-    : 'https://claude-schweb.onrender.com';
+    : window.location.origin;
 
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
