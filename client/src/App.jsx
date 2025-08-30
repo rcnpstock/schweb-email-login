@@ -128,122 +128,84 @@ function App() {
     // Setup Page - Show this when configuration is needed
     if (showSetup) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 relative overflow-hidden">
-                {/* Animated background elements */}
-                <div className="absolute inset-0">
-                    <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
-                    <div className="absolute top-3/4 right-1/4 w-96 h-96 bg-cyan-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse" style={{animationDelay: '2s'}}></div>
-                    <div className="absolute bottom-1/4 left-1/3 w-96 h-96 bg-pink-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse" style={{animationDelay: '4s'}}></div>
-                </div>
-                
-                {/* Stars/sparkles */}
-                <div className="absolute inset-0 overflow-hidden">
-                    <Sparkles className="absolute top-20 left-20 text-white opacity-30 animate-pulse" size={16} />
-                    <Sparkles className="absolute top-40 right-32 text-purple-300 opacity-40 animate-pulse" size={12} style={{animationDelay: '1s'}} />
-                    <Sparkles className="absolute bottom-32 left-1/4 text-cyan-300 opacity-35 animate-pulse" size={14} style={{animationDelay: '3s'}} />
-                    <Sparkles className="absolute top-1/3 right-1/4 text-pink-300 opacity-30 animate-pulse" size={18} style={{animationDelay: '2s'}} />
-                </div>
-
-                <div className="relative z-10 min-h-screen flex items-center justify-center px-4 py-12">
-                    <div className="bg-white/10 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-8 max-w-lg w-full transform hover:scale-105 transition-all duration-500">
-                        {/* Header with icon */}
-                        <div className="text-center mb-8">
-                            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full mb-6 shadow-lg">
-                                <Settings className="text-white animate-spin" size={32} style={{animation: 'spin 3s linear infinite'}} />
-                            </div>
-                            <h1 className="text-4xl font-bold bg-gradient-to-r from-white to-purple-200 bg-clip-text text-transparent mb-4">
-                                API Configuration
-                            </h1>
-                            <p className="text-purple-100 text-lg">
-                                Connect your Schwab Developer credentials
-                            </p>
-                            <div className="w-24 h-1 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full mx-auto mt-4"></div>
+            <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 flex items-center justify-center px-4">
+                <div className="bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl border border-white/20 p-8 max-w-lg w-full">
+                    {/* Header */}
+                    <div className="text-center mb-8">
+                        <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full mb-4">
+                            <Settings className="text-white" size={28} />
+                        </div>
+                        <h1 className="text-3xl font-bold text-white mb-2">
+                            API Configuration
+                        </h1>
+                        <p className="text-purple-200">
+                            Connect your Schwab Developer credentials
+                        </p>
+                    </div>
+                    
+                    <form onSubmit={handleSetupSubmit} className="space-y-6">
+                        {/* Client ID Field */}
+                        <div>
+                            <label className="flex items-center text-sm font-medium text-purple-200 mb-2">
+                                <Key className="mr-2" size={16} />
+                                Client ID
+                            </label>
+                            <input
+                                type="text"
+                                value={setupData.clientId}
+                                onChange={(e) => setSetupData({...setupData, clientId: e.target.value})}
+                                className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl focus:ring-2 focus:ring-purple-400 focus:border-purple-400 text-white placeholder-purple-300 transition-all duration-300"
+                                placeholder="Enter your Schwab Client ID"
+                                required
+                            />
                         </div>
                         
-                        <form onSubmit={handleSetupSubmit} className="space-y-6">
-                            {/* Client ID Field */}
-                            <div className="group">
-                                <label className="flex items-center text-sm font-semibold text-purple-200 mb-3">
-                                    <Key className="mr-2" size={16} />
-                                    Client ID
-                                </label>
-                                <div className="relative">
-                                    <input
-                                        type="text"
-                                        value={setupData.clientId}
-                                        onChange={(e) => setSetupData({...setupData, clientId: e.target.value})}
-                                        className="w-full px-4 py-4 bg-white/10 border border-white/20 rounded-2xl focus:ring-2 focus:ring-purple-400 focus:border-purple-400 text-white placeholder-purple-300 backdrop-blur-sm transition-all duration-300 hover:bg-white/15"
-                                        placeholder="Enter your Schwab Client ID"
-                                        required
-                                    />
-                                    <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-purple-400/20 to-pink-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
-                                </div>
-                            </div>
-                            
-                            {/* Client Secret Field */}
-                            <div className="group">
-                                <label className="flex items-center text-sm font-semibold text-purple-200 mb-3">
-                                    <Shield className="mr-2" size={16} />
-                                    Client Secret
-                                </label>
-                                <div className="relative">
-                                    <input
-                                        type="password"
-                                        value={setupData.clientSecret}
-                                        onChange={(e) => setSetupData({...setupData, clientSecret: e.target.value})}
-                                        className="w-full px-4 py-4 bg-white/10 border border-white/20 rounded-2xl focus:ring-2 focus:ring-purple-400 focus:border-purple-400 text-white placeholder-purple-300 backdrop-blur-sm transition-all duration-300 hover:bg-white/15"
-                                        placeholder="Enter your Schwab Client Secret"
-                                        required
-                                    />
-                                    <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-purple-400/20 to-pink-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
-                                </div>
-                            </div>
-                            
-                            {/* Redirect URI Field */}
-                            <div className="group">
-                                <label className="flex items-center text-sm font-semibold text-purple-200 mb-3">
-                                    <AlertCircle className="mr-2" size={16} />
-                                    Redirect URI
-                                </label>
-                                <div className="relative">
-                                    <input
-                                        type="url"
-                                        value={setupData.redirectUri}
-                                        onChange={(e) => setSetupData({...setupData, redirectUri: e.target.value})}
-                                        className="w-full px-4 py-4 bg-white/10 border border-white/20 rounded-2xl focus:ring-2 focus:ring-purple-400 focus:border-purple-400 text-white placeholder-purple-300 backdrop-blur-sm transition-all duration-300 hover:bg-white/15"
-                                        placeholder="OAuth Redirect URI"
-                                        required
-                                    />
-                                    <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-purple-400/20 to-pink-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
-                                </div>
-                            </div>
-                            
-                            {/* Submit Button */}
-                            <div className="pt-4">
-                                <button
-                                    type="submit"
-                                    className="w-full bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 text-white py-4 px-6 rounded-2xl font-bold text-lg shadow-2xl hover:shadow-purple-500/25 transition-all duration-500 transform hover:scale-105 hover:rotate-1 relative overflow-hidden group"
-                                >
-                                    <span className="relative z-10 flex items-center justify-center">
-                                        <Settings className="mr-2 group-hover:animate-spin" size={20} />
-                                        Save & Configure
-                                    </span>
-                                    <div className="absolute inset-0 bg-gradient-to-r from-pink-600 via-purple-600 to-pink-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                                </button>
-                            </div>
-                        </form>
-                        
-                        {/* Footer */}
-                        <div className="mt-8 text-center">
-                            <div className="inline-flex items-center justify-center space-x-2 text-purple-200 text-sm">
-                                <Shield size={14} />
-                                <span>Secure • Encrypted • Developer Portal</span>
-                                <Shield size={14} />
-                            </div>
-                            <p className="text-purple-300 text-xs mt-2">
-                                Get your credentials from the Schwab Developer Portal
-                            </p>
+                        {/* Client Secret Field */}
+                        <div>
+                            <label className="flex items-center text-sm font-medium text-purple-200 mb-2">
+                                <Shield className="mr-2" size={16} />
+                                Client Secret
+                            </label>
+                            <input
+                                type="password"
+                                value={setupData.clientSecret}
+                                onChange={(e) => setSetupData({...setupData, clientSecret: e.target.value})}
+                                className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl focus:ring-2 focus:ring-purple-400 focus:border-purple-400 text-white placeholder-purple-300 transition-all duration-300"
+                                placeholder="Enter your Schwab Client Secret"
+                                required
+                            />
                         </div>
+                        
+                        {/* Redirect URI Field */}
+                        <div>
+                            <label className="flex items-center text-sm font-medium text-purple-200 mb-2">
+                                <AlertCircle className="mr-2" size={16} />
+                                Redirect URI
+                            </label>
+                            <input
+                                type="url"
+                                value={setupData.redirectUri}
+                                onChange={(e) => setSetupData({...setupData, redirectUri: e.target.value})}
+                                className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl focus:ring-2 focus:ring-purple-400 focus:border-purple-400 text-white placeholder-purple-300 transition-all duration-300"
+                                placeholder="OAuth Redirect URI"
+                                required
+                            />
+                        </div>
+                        
+                        {/* Submit Button */}
+                        <button
+                            type="submit"
+                            className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-3 px-4 rounded-xl font-bold text-lg shadow-lg hover:from-purple-700 hover:to-pink-700 transition-all duration-300 transform hover:scale-105"
+                        >
+                            Save & Configure
+                        </button>
+                    </form>
+                    
+                    {/* Footer */}
+                    <div className="mt-6 text-center">
+                        <p className="text-purple-300 text-sm">
+                            🔒 Secure • Get credentials from Schwab Developer Portal
+                        </p>
                     </div>
                 </div>
             </div>
