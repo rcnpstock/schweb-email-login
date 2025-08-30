@@ -11,6 +11,12 @@ function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [loginChecked, setLoginChecked] = useState(false);
     const [copied, setCopied] = useState({ webhook: false, json: false });
+    const [showSetup, setShowSetup] = useState(false);
+    const [setupData, setSetupData] = useState({
+        clientId: '',
+        clientSecret: '',
+        redirectUri: `${window.location.origin}/callback`
+    });
     
     // Sample JSON for TradingView - properly formatted
     const sampleJson = `{
@@ -33,6 +39,11 @@ function App() {
             }
         } catch (error) {
             console.error("Error checking login status:", error);
+            // Check if it's a configuration error
+            if (error.response?.status === 500 && 
+                error.response?.data?.error?.includes?.('Configuration not found')) {
+                setShowSetup(true);
+            }
         } finally {
             setLoginChecked(true);
         }
@@ -80,11 +91,97 @@ function App() {
         }
     };
 
+    const handleSetupSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            const response = await axios.post(`${base_url}/api/config`, setupData);
+            if (response.data.success) {
+                alert("Configuration saved successfully!");
+                setShowSetup(false);
+                // Refresh the page to check login status again
+                window.location.reload();
+            }
+        } catch (error) {
+            console.error("Error saving configuration:", error);
+            alert("Failed to save configuration. Please try again.");
+        }
+    };
+
     // Loading state
     if (!loginChecked) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
                 <div className="text-xl text-gray-600">Loading...</div>
+            </div>
+        );
+    }
+
+    // Setup Page - Show this when configuration is needed
+    if (showSetup) {
+        return (
+            <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-100 flex items-center justify-center px-4">
+                <div className="bg-white rounded-2xl shadow-xl p-8 max-w-lg w-full">
+                    <div className="text-center mb-6">
+                        <h1 className="text-3xl font-bold text-gray-800 mb-4">
+                            Setup Required
+                        </h1>
+                        <p className="text-gray-600">
+                            Please configure your Schwab API credentials to continue
+                        </p>
+                    </div>
+                    
+                    <form onSubmit={handleSetupSubmit} className="space-y-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Client ID
+                            </label>
+                            <input
+                                type="text"
+                                value={setupData.clientId}
+                                onChange={(e) => setSetupData({...setupData, clientId: e.target.value})}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                required
+                            />
+                        </div>
+                        
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Client Secret
+                            </label>
+                            <input
+                                type="password"
+                                value={setupData.clientSecret}
+                                onChange={(e) => setSetupData({...setupData, clientSecret: e.target.value})}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                required
+                            />
+                        </div>
+                        
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Redirect URI
+                            </label>
+                            <input
+                                type="url"
+                                value={setupData.redirectUri}
+                                onChange={(e) => setSetupData({...setupData, redirectUri: e.target.value})}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                required
+                            />
+                        </div>
+                        
+                        <button
+                            type="submit"
+                            className="w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white py-3 px-4 rounded-xl font-medium hover:from-green-700 hover:to-emerald-700 transition-all duration-300 text-lg shadow-lg transform hover:scale-105"
+                        >
+                            Save Configuration
+                        </button>
+                    </form>
+                    
+                    <p className="text-xs text-gray-500 mt-4 text-center">
+                        Get your API credentials from the Schwab Developer Portal
+                    </p>
+                </div>
             </div>
         );
     }
@@ -112,6 +209,13 @@ function App() {
                         <p className="text-xs text-gray-500 mt-6">
                             You'll be redirected to Schwab to authorize the connection
                         </p>
+                        
+                        <button
+                            onClick={() => setShowSetup(true)}
+                            className="mt-4 text-sm text-gray-500 hover:text-gray-700 underline"
+                        >
+                            Need to configure API credentials?
+                        </button>
                     </div>
                 </div>
             </div>
