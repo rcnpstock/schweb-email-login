@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { Copy, CheckCircle, AlertCircle, LogOut, Settings, Key, Shield, Sparkles } from "lucide-react";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { Copy, CheckCircle, AlertCircle, LogOut, Settings, Key, Shield } from "lucide-react";
 import axios from "axios";
 
 // Determine base URL based on environment
@@ -7,16 +8,157 @@ const base_url = window.location.hostname === 'localhost'
     ? 'https://local.schwabtest.com:3000'
     : window.location.origin;
 
-function App() {
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [loginChecked, setLoginChecked] = useState(false);
-    const [copied, setCopied] = useState({ webhook: false, json: false });
-    const [showSetup, setShowSetup] = useState(false);
+// Setup Page Component
+function SetupPage() {
     const [setupData, setSetupData] = useState({
         clientId: '',
         clientSecret: '',
         redirectUri: `${window.location.origin}/callback`
     });
+
+    const handleSetupSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            const response = await axios.post(`${base_url}/api/config`, setupData);
+            if (response.data.success) {
+                alert("Configuration saved successfully!");
+                // Redirect to home page
+                window.location.href = '/';
+            }
+        } catch (error) {
+            console.error("Error saving configuration:", error);
+            alert("Failed to save configuration. Please try again.");
+        }
+    };
+
+    return (
+        <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 flex items-center justify-center px-4">
+            <div className="bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl border border-white/20 p-8 max-w-lg w-full">
+                {/* Header */}
+                <div className="text-center mb-8">
+                    <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full mb-4">
+                        <Settings className="text-white" size={28} />
+                    </div>
+                    <h1 className="text-3xl font-bold text-white mb-2">
+                        API Configuration
+                    </h1>
+                    <p className="text-purple-200">
+                        Connect your Schwab Developer credentials
+                    </p>
+                </div>
+                
+                <form onSubmit={handleSetupSubmit} className="space-y-6">
+                    {/* Client ID Field */}
+                    <div>
+                        <label className="flex items-center text-sm font-medium text-purple-200 mb-2">
+                            <Key className="mr-2" size={16} />
+                            Client ID
+                        </label>
+                        <input
+                            type="text"
+                            value={setupData.clientId}
+                            onChange={(e) => setSetupData({...setupData, clientId: e.target.value})}
+                            className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl focus:ring-2 focus:ring-purple-400 focus:border-purple-400 text-white placeholder-purple-300 transition-all duration-300"
+                            placeholder="Enter your Schwab Client ID"
+                            required
+                        />
+                    </div>
+                    
+                    {/* Client Secret Field */}
+                    <div>
+                        <label className="flex items-center text-sm font-medium text-purple-200 mb-2">
+                            <Shield className="mr-2" size={16} />
+                            Client Secret
+                        </label>
+                        <input
+                            type="password"
+                            value={setupData.clientSecret}
+                            onChange={(e) => setSetupData({...setupData, clientSecret: e.target.value})}
+                            className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl focus:ring-2 focus:ring-purple-400 focus:border-purple-400 text-white placeholder-purple-300 transition-all duration-300"
+                            placeholder="Enter your Schwab Client Secret"
+                            required
+                        />
+                    </div>
+                    
+                    {/* Redirect URI Field */}
+                    <div>
+                        <label className="flex items-center text-sm font-medium text-purple-200 mb-2">
+                            <AlertCircle className="mr-2" size={16} />
+                            Redirect URI
+                        </label>
+                        <input
+                            type="url"
+                            value={setupData.redirectUri}
+                            onChange={(e) => setSetupData({...setupData, redirectUri: e.target.value})}
+                            className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl focus:ring-2 focus:ring-purple-400 focus:border-purple-400 text-white placeholder-purple-300 transition-all duration-300"
+                            placeholder="OAuth Redirect URI"
+                            required
+                        />
+                    </div>
+                    
+                    {/* Submit Button */}
+                    <button
+                        type="submit"
+                        className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-3 px-4 rounded-xl font-bold text-lg shadow-lg hover:from-purple-700 hover:to-pink-700 transition-all duration-300 transform hover:scale-105"
+                    >
+                        Save & Configure
+                    </button>
+                </form>
+                
+                {/* Footer */}
+                <div className="mt-6 text-center">
+                    <p className="text-purple-300 text-sm">
+                        🔒 Secure • Get credentials from Schwab Developer Portal
+                    </p>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+// Login Page Component
+function LoginPage() {
+    const handleLogin = () => {
+        window.location.href = `${base_url}/login`;
+    };
+
+    return (
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center px-4">
+            <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full">
+                <div className="text-center">
+                    <h1 className="text-3xl font-bold text-gray-800 mb-4">
+                        Schwab TradingView Integration
+                    </h1>
+                    <p className="text-gray-600 mb-8">
+                        Connect your Schwab account to automate TradingView alerts
+                    </p>
+                    
+                    <button
+                        onClick={handleLogin}
+                        className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-3 px-4 rounded-xl font-medium hover:from-purple-700 hover:to-blue-700 transition-all duration-300 text-lg shadow-lg transform hover:scale-105"
+                    >
+                        Login with Schwab
+                    </button>
+                    
+                    <p className="text-xs text-gray-500 mt-6">
+                        You'll be redirected to Schwab to authorize the connection
+                    </p>
+                    
+                    <a
+                        href="/setup"
+                        className="mt-4 text-sm text-gray-500 hover:text-gray-700 underline block"
+                    >
+                        Need to configure API credentials?
+                    </a>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+// Dashboard Component
+function Dashboard() {
+    const [copied, setCopied] = useState({ webhook: false, json: false });
     
     // Sample JSON for TradingView - properly formatted
     const sampleJson = `{
@@ -25,42 +167,6 @@ function App() {
   "quantity": "{{strategy.order.contracts}}",
   "strategy": "{{strategy.order.id}}"
 }`;
-
-    // Check login status on mount
-    useEffect(() => {
-        checkLoginStatus();
-    }, []);
-
-    const checkLoginStatus = async () => {
-        try {
-            // Check login status
-            const res = await axios.get(`${base_url}/status`);
-            if (res.data.loggedIn) {
-                setIsLoggedIn(true);
-                return;
-            }
-        } catch (error) {
-            console.error("Error checking login status:", error);
-        }
-
-        // Check if configuration exists
-        try {
-            const configRes = await axios.get(`${base_url}/api/config/status`);
-            if (!configRes.data.configured || !configRes.data.hasCredentials) {
-                setShowSetup(true);
-            }
-        } catch (error) {
-            console.error("Configuration check error:", error);
-            // If config endpoint fails, assume setup is needed
-            setShowSetup(true);
-        } finally {
-            setLoginChecked(true);
-        }
-    };
-
-    const handleLogin = () => {
-        window.location.href = `${base_url}/login`;
-    };
 
     const handleCopy = (type) => {
         const textToCopy = type === 'webhook' 
@@ -77,9 +183,8 @@ function App() {
 
     const handleLogout = async () => {
         try {
-            // Just clear local state - backend doesn't have logout endpoint yet
-            setIsLoggedIn(false);
             localStorage.removeItem("isLoggedIn");
+            window.location.href = '/';
         } catch (error) {
             console.error("Error logging out:", error);
         }
@@ -89,10 +194,9 @@ function App() {
         try {
             const response = await axios.delete(`${base_url}/tokens`);
             if (response.data.success) {
-                // After deleting tokens, user is effectively logged out
-                setIsLoggedIn(false);
                 localStorage.removeItem("isLoggedIn");
                 alert("All refresh tokens have been deleted successfully!");
+                window.location.href = '/';
             }
         } catch (error) {
             console.error("Error deleting tokens:", error);
@@ -100,155 +204,6 @@ function App() {
         }
     };
 
-    const handleSetupSubmit = async (e) => {
-        e.preventDefault();
-        try {
-            const response = await axios.post(`${base_url}/api/config`, setupData);
-            if (response.data.success) {
-                alert("Configuration saved successfully!");
-                setShowSetup(false);
-                // Refresh the page to check login status again
-                window.location.reload();
-            }
-        } catch (error) {
-            console.error("Error saving configuration:", error);
-            alert("Failed to save configuration. Please try again.");
-        }
-    };
-
-    // Loading state
-    if (!loginChecked) {
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
-                <div className="text-xl text-gray-600">Loading...</div>
-            </div>
-        );
-    }
-
-    // Setup Page - Show this when configuration is needed
-    if (showSetup) {
-        return (
-            <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 flex items-center justify-center px-4">
-                <div className="bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl border border-white/20 p-8 max-w-lg w-full">
-                    {/* Header */}
-                    <div className="text-center mb-8">
-                        <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full mb-4">
-                            <Settings className="text-white" size={28} />
-                        </div>
-                        <h1 className="text-3xl font-bold text-white mb-2">
-                            API Configuration
-                        </h1>
-                        <p className="text-purple-200">
-                            Connect your Schwab Developer credentials
-                        </p>
-                    </div>
-                    
-                    <form onSubmit={handleSetupSubmit} className="space-y-6">
-                        {/* Client ID Field */}
-                        <div>
-                            <label className="flex items-center text-sm font-medium text-purple-200 mb-2">
-                                <Key className="mr-2" size={16} />
-                                Client ID
-                            </label>
-                            <input
-                                type="text"
-                                value={setupData.clientId}
-                                onChange={(e) => setSetupData({...setupData, clientId: e.target.value})}
-                                className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl focus:ring-2 focus:ring-purple-400 focus:border-purple-400 text-white placeholder-purple-300 transition-all duration-300"
-                                placeholder="Enter your Schwab Client ID"
-                                required
-                            />
-                        </div>
-                        
-                        {/* Client Secret Field */}
-                        <div>
-                            <label className="flex items-center text-sm font-medium text-purple-200 mb-2">
-                                <Shield className="mr-2" size={16} />
-                                Client Secret
-                            </label>
-                            <input
-                                type="password"
-                                value={setupData.clientSecret}
-                                onChange={(e) => setSetupData({...setupData, clientSecret: e.target.value})}
-                                className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl focus:ring-2 focus:ring-purple-400 focus:border-purple-400 text-white placeholder-purple-300 transition-all duration-300"
-                                placeholder="Enter your Schwab Client Secret"
-                                required
-                            />
-                        </div>
-                        
-                        {/* Redirect URI Field */}
-                        <div>
-                            <label className="flex items-center text-sm font-medium text-purple-200 mb-2">
-                                <AlertCircle className="mr-2" size={16} />
-                                Redirect URI
-                            </label>
-                            <input
-                                type="url"
-                                value={setupData.redirectUri}
-                                onChange={(e) => setSetupData({...setupData, redirectUri: e.target.value})}
-                                className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl focus:ring-2 focus:ring-purple-400 focus:border-purple-400 text-white placeholder-purple-300 transition-all duration-300"
-                                placeholder="OAuth Redirect URI"
-                                required
-                            />
-                        </div>
-                        
-                        {/* Submit Button */}
-                        <button
-                            type="submit"
-                            className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-3 px-4 rounded-xl font-bold text-lg shadow-lg hover:from-purple-700 hover:to-pink-700 transition-all duration-300 transform hover:scale-105"
-                        >
-                            Save & Configure
-                        </button>
-                    </form>
-                    
-                    {/* Footer */}
-                    <div className="mt-6 text-center">
-                        <p className="text-purple-300 text-sm">
-                            🔒 Secure • Get credentials from Schwab Developer Portal
-                        </p>
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
-    // Login Page - Show this when not logged in
-    if (!isLoggedIn) {
-        return (
-            <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center px-4">
-                <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full">
-                    <div className="text-center">
-                        <h1 className="text-3xl font-bold text-gray-800 mb-4">
-                            Schwab TradingView Integration
-                        </h1>
-                        <p className="text-gray-600 mb-8">
-                            Connect your Schwab account to automate TradingView alerts
-                        </p>
-                        
-                        <button
-                            onClick={handleLogin}
-                            className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-3 px-4 rounded-xl font-medium hover:from-purple-700 hover:to-blue-700 transition-all duration-300 text-lg shadow-lg transform hover:scale-105"
-                        >
-                            Login with Schwab
-                        </button>
-                        
-                        <p className="text-xs text-gray-500 mt-6">
-                            You'll be redirected to Schwab to authorize the connection
-                        </p>
-                        
-                        <button
-                            onClick={() => setShowSetup(true)}
-                            className="mt-4 text-sm text-gray-500 hover:text-gray-700 underline"
-                        >
-                            Need to configure API credentials?
-                        </button>
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
-    // Dashboard Page - Show this when logged in
     return (
         <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 py-12 px-4">
             <div className="max-w-4xl mx-auto">
@@ -265,7 +220,7 @@ function App() {
                                 onClick={handleDeleteAllTokens}
                                 className="flex items-center bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-2 rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all duration-300 shadow-lg transform hover:scale-105"
                             >
-                                delete all token
+                                Delete All Tokens
                             </button>
                             <button
                                 onClick={handleLogout}
@@ -302,9 +257,6 @@ function App() {
                                     </>
                                 )}
                             </button>
-                            <p className="text-xs text-gray-500 mt-2">
-                                Add this URL to your TradingView alert
-                            </p>
                         </div>
 
                         {/* JSON Template Box */}
@@ -331,9 +283,6 @@ function App() {
                                     </>
                                 )}
                             </button>
-                            <p className="text-xs text-gray-500 mt-2">
-                                Paste this in the alert message field
-                            </p>
                         </div>
                     </div>
 
@@ -366,6 +315,18 @@ function App() {
                 </div>
             </div>
         </div>
+    );
+}
+
+function App() {
+    return (
+        <Router>
+            <Routes>
+                <Route path="/setup" element={<SetupPage />} />
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/" element={<LoginPage />} />
+            </Routes>
+        </Router>
     );
 }
 
