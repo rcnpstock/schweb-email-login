@@ -13,6 +13,7 @@ const oauthRoutes = require("./routes/oauth.route.js");
 const webhookRoutes = require("./routes/webhook.route.js");
 const setupRoutes = require("./routes/setup.route.js");
 const cloudSetupRoutes = require("./routes/cloud-setup.route.js");
+const configRoutes = require("./routes/config.route.js");
 const https = require("https");
 const fs = require("fs");
 
@@ -48,6 +49,9 @@ app.use("/setup", setupRoutes);
 
 console.log("Loading cloud setup routes...");
 app.use("/cloud", cloudSetupRoutes);
+
+console.log("Loading config routes...");
+app.use(configRoutes);
 console.log("✅ All routes loaded successfully");
 
 // Add static file serving (safe method)

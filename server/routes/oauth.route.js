@@ -2,19 +2,43 @@ require("dotenv").config();
 const express = require("express");
 const router = express.Router();
 const Token = require("../models/token.model.js");
+const Config = require("../models/config.model.js");
 const axios = require("axios");
 const logger = require("../utils/logger.js");
 
-router.get("/login", (req, res) => {
-    const { CLIENT_ID, REDIRECT_URI } = process.env;
-    const baseUrl = "https://api.schwabapi.com/v1/oauth/authorize";
+router.get("/login", async (req, res) => {
+    try {
+        // Try to get config from database first
+        const config = await Config.findOne({ userId: "default" });
+        
+        let CLIENT_ID, REDIRECT_URI;
+        
+        if (config) {
+            CLIENT_ID = config.clientId;
+            REDIRECT_URI = config.redirectUri;
+        } else {
+            // Fallback to environment variables
+            CLIENT_ID = process.env.CLIENT_ID;
+            REDIRECT_URI = process.env.REDIRECT_URI;
+        }
+        
+        if (!CLIENT_ID || !REDIRECT_URI) {
+            return res.status(400).json({ 
+                error: "Configuration not found. Please configure your Schwab API credentials first." 
+            });
+        }
+        
+        const baseUrl = "https://api.schwabapi.com/v1/oauth/authorize";
+        const oauthUrl = `${baseUrl}?response_type=code&client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(
+            REDIRECT_URI
+        )}&scope=PlaceTrade+ReadAccounts`;
 
-    const oauthUrl = `${baseUrl}?response_type=code&client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(
-        REDIRECT_URI
-    )}&scope=PlaceTrade+ReadAccounts`;
-
-    logger.info("Redirecting to:", oauthUrl);
-    res.redirect(oauthUrl);
+        logger.info("Redirecting to:", oauthUrl);
+        res.redirect(oauthUrl);
+    } catch (error) {
+        logger.error("Login error:", error);
+        res.status(500).json({ error: "Failed to initiate login" });
+    }
 });
 
 router.get("/callback", async (req, res) => {
@@ -27,7 +51,22 @@ router.get("/callback", async (req, res) => {
     }
 
     try {
-        const { CLIENT_ID, CLIENT_SECRET, REDIRECT_URI } = process.env;
+        // Try to get config from database first
+        const config = await Config.findOne({ userId: "default" });
+        
+        let CLIENT_ID, CLIENT_SECRET, REDIRECT_URI;
+        
+        if (config) {
+            CLIENT_ID = config.clientId;
+            CLIENT_SECRET = config.clientSecret;
+            REDIRECT_URI = config.redirectUri;
+        } else {
+            // Fallback to environment variables
+            CLIENT_ID = process.env.CLIENT_ID;
+            CLIENT_SECRET = process.env.CLIENT_SECRET;
+            REDIRECT_URI = process.env.REDIRECT_URI;
+        }
+        
         const credentials = Buffer.from(
             `${CLIENT_ID}:${CLIENT_SECRET}`
         ).toString("base64");
@@ -58,10 +97,10 @@ router.get("/callback", async (req, res) => {
 
         logger.info("Tokens saved to MongoDB");
 
-        // Redirect back to the app
+        // Redirect back to the frontend dashboard
         const redirectUrl = process.env.NODE_ENV === 'production' 
-            ? '/success'  // Production: redirect to success page on same domain
-            : 'http://localhost:5173';  // Development: redirect to local client
+            ? '/'  // Production: redirect to root which will load the React app
+            : 'https://local.schwabtest.com:5173';  // Development: redirect to local client
         
         res.redirect(redirectUrl);
     } catch (error) {
