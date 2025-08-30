@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Schwab TradingView integration webhook server",
   "scripts": {
-    "build": "cd client && npm install && npm run build && cd ../server && npm install && mkdir -p public && cp -r ../client/dist/* public/",
+    "build": "cd client && npm install && npm run build && cd ../server && npm install && rm -rf public && mkdir -p public && cp -r ../client/dist/* public/ && echo 'Build complete: Client files copied to server/public'",
     "start": "cd server && npm start"
   },
   "keywords": ["schwab", "tradingview", "webhook", "trading"],

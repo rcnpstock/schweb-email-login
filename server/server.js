@@ -54,10 +54,60 @@ console.log("Loading config routes...");
 app.use(configRoutes);
 console.log("✅ All routes loaded successfully");
 
-// Add static file serving (safe method)
+// Add static file serving with fallback
 console.log("Adding static file serving...");
 if (IS_PRODUCTION) {
-  app.use(express.static("public"));
+  // Ensure public directory exists
+  const publicPath = path.join(__dirname, "public");
+  if (!fs.existsSync(publicPath)) {
+    fs.mkdirSync(publicPath, { recursive: true });
+    console.log("Created public directory");
+    
+    // Create a fallback index.html if it doesn't exist
+    const indexPath = path.join(publicPath, "index.html");
+    if (!fs.existsSync(indexPath)) {
+      const fallbackHTML = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schwab TradingView Integration</title>
+    <script>
+      // Redirect to the actual app URL if this is a fallback
+      if (window.location.pathname === '/' && !window.appLoaded) {
+        // Try to load the actual React app
+        window.location.reload();
+      }
+    </script>
+    <style>
+      body { font-family: Arial, sans-serif; padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; margin: 0; }
+      .container { max-width: 800px; margin: 50px auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+      h1 { color: #333; }
+      .status { padding: 15px; background: #e8f5e9; border-radius: 8px; margin: 20px 0; }
+      .btn { background: #4CAF50; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block; margin: 10px 5px; }
+      .btn:hover { background: #45a049; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Schwab TradingView Integration</h1>
+        <div class="status">✅ Server is running! Setting up your app...</div>
+        <p>If the page doesn't load automatically, please use these links:</p>
+        <a href="/login" class="btn">Login with Schwab</a>
+        <a href="/health" class="btn">Check Health</a>
+        <p style="margin-top: 30px;"><strong>Webhook URL:</strong><br>
+        <code style="background: #f5f5f5; padding: 10px; display: block; margin-top: 10px; border-radius: 5px;">
+          https://claude-schweb.onrender.com/webhook/tradingview
+        </code></p>
+    </div>
+</body>
+</html>`;
+      fs.writeFileSync(indexPath, fallbackHTML);
+      console.log("Created fallback index.html");
+    }
+  }
+  
+  app.use(express.static(publicPath));
   console.log("✅ Production static files configured");
 } else {
   app.use(express.static("../client/dist"));
@@ -73,7 +123,41 @@ console.log("✅ Health check route added");
 // Root route handler
 app.get("/", (req, res) => {
   if (IS_PRODUCTION) {
-    res.sendFile("index.html", { root: "public" });
+    const indexPath = path.join(__dirname, "public", "index.html");
+    if (fs.existsSync(indexPath)) {
+      res.sendFile(indexPath);
+    } else {
+      // Fallback HTML if file doesn't exist
+      res.send(`<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schwab TradingView Integration</title>
+    <style>
+      body { font-family: Arial, sans-serif; padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; margin: 0; }
+      .container { max-width: 800px; margin: 50px auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+      h1 { color: #333; }
+      .status { padding: 15px; background: #e8f5e9; border-radius: 8px; margin: 20px 0; }
+      .btn { background: #4CAF50; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block; margin: 10px 5px; }
+      .btn:hover { background: #45a049; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Schwab TradingView Integration</h1>
+        <div class="status">✅ Server is running successfully!</div>
+        <a href="/login" class="btn">Login with Schwab</a>
+        <a href="/status" class="btn">Check Status</a>
+        <a href="/health" class="btn">Health Check</a>
+        <p style="margin-top: 30px;"><strong>Webhook URL:</strong><br>
+        <code style="background: #f5f5f5; padding: 10px; display: block; margin-top: 10px; border-radius: 5px;">
+          https://claude-schweb.onrender.com/webhook/tradingview
+        </code></p>
+    </div>
+</body>
+</html>`);
+    }
   } else {
     res.json({ status: "ok", message: "Schwab Webhook App is running - Development" });
   }
