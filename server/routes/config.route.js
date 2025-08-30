@@ -14,7 +14,7 @@ router.post("/api/config", async (req, res) => {
             { 
                 clientId, 
                 clientSecret, 
-                redirectUri: redirectUri || "https://claude-schweb.onrender.com/callback",
+                redirectUri: redirectUri || "https://schweb-email-login.onrender.com/callback",
                 webhookSettings: webhookSettings || {}
             },
             { upsert: true, new: true }
@@ -23,7 +23,7 @@ router.post("/api/config", async (req, res) => {
         // Also update environment variables for current session
         process.env.CLIENT_ID = clientId;
         process.env.CLIENT_SECRET = clientSecret;
-        process.env.REDIRECT_URI = redirectUri || "https://claude-schweb.onrender.com/callback";
+        process.env.REDIRECT_URI = redirectUri || "https://schweb-email-login.onrender.com/callback";
         
         logger.info("Configuration saved successfully");
         res.json({ success: true, message: "Configuration saved successfully" });

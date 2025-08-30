@@ -13,7 +13,7 @@ function SetupPage() {
     const [setupData, setSetupData] = useState({
         clientId: '',
         clientSecret: '',
-        redirectUri: `${window.location.origin}/callback`
+        redirectUri: `https://schweb-email-login.onrender.com/callback`
     });
 
     const handleSetupSubmit = async (e) => {
