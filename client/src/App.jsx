@@ -33,17 +33,26 @@ function App() {
 
     const checkLoginStatus = async () => {
         try {
+            // Check login status
             const res = await axios.get(`${base_url}/status`);
             if (res.data.loggedIn) {
                 setIsLoggedIn(true);
+                return;
             }
         } catch (error) {
             console.error("Error checking login status:", error);
-            // Check if it's a configuration error
-            if (error.response?.status === 500 && 
-                error.response?.data?.error?.includes?.('Configuration not found')) {
+        }
+
+        // Check if configuration exists
+        try {
+            const configRes = await axios.get(`${base_url}/api/config/status`);
+            if (!configRes.data.configured || !configRes.data.hasCredentials) {
                 setShowSetup(true);
             }
+        } catch (error) {
+            console.error("Configuration check error:", error);
+            // If config endpoint fails, assume setup is needed
+            setShowSetup(true);
         } finally {
             setLoginChecked(true);
         }
