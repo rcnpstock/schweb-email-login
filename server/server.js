@@ -72,13 +72,6 @@ if (IS_PRODUCTION) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Schwab TradingView Integration</title>
-    <script>
-      // Redirect to the actual app URL if this is a fallback
-      if (window.location.pathname === '/' && !window.appLoaded) {
-        // Try to load the actual React app
-        window.location.reload();
-      }
-    </script>
     <style>
       body { font-family: Arial, sans-serif; padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; margin: 0; }
       .container { max-width: 800px; margin: 50px auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
